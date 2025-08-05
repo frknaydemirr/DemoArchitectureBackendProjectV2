@@ -25,3 +25,8 @@ paketler sayesinde daha kýsa ve anlaþýlýr bir þekilde yazabiliriz.
             SimpleDbContext context = new SimpleDbContext(); ile;
             context.Users.ToList();
             -> Entity Framework tek satýrda halletti!
+
+
+            //Crud iþlemleri için interface ' de metot imzasý yapýp classlarda çaðýrmmaýz lazým
+            //DataAccess katmanýnda CRUD iþlemleri için interface oluþturuyoruz.
+            //çaðýrdýðýmýz class -> Entity Framework ile CRUD iþlemlerini yapacaðýmýz class
