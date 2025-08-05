@@ -1,21 +1,21 @@
-Orm Paketleri ne i�e yarar:
+﻿Orm Paketleri ne işe yarar:
 //SqlDataAdapter adp= new SqlDataAdapter("select * from Users", con);
 //DataTable da= new DataTable();
 //da.Clear();
 //adp.Fill(da);
 
-sql ile yapaca��m�z i�lemleri daha kolay hale getirir. -> bu kodlar� uzun uyazmak yerine
-paketler sayesinde daha k�sa ve anla��l�r bir �ekilde yazabiliriz.
+sql ile yapacağımız işlemleri daha kolay hale getirir. -> bu kodları uzun uyazmak yerine
+paketler sayesinde daha kısa ve anlaşılır bir şekilde yazabiliriz.
 
  public class SimpleContextDb : DbContext
- dbContext s�n�f�, Entity Framework Core'un temel s�n�f�d�r
- ve veritaban� ile etkile�im kurmak i�in kullan�l�r.
- -> database ler ile kolay bir �ekilde �al��mam�z� sa�lar.
+ dbContext sınıfı, Entity Framework Core'un temel sınıfıdır
+ ve veritabanı ile etkileşim kurmak için kullanılır.
+ -> database ler ile kolay bir şekilde çalışmamızı sağlar.
 
- //dbContext i�indeki onconfig metodunu override ederek sql baplant�s�n� yap�yoruz.
+ //dbContext içindeki onconfig metodunu override ederek sql baplantısını yapıyoruz.
 
  Not:
- Entity Framework ORM yap�s�yla kod kalabal���n�n �n�ne ge�mi� oluruz.
+ Entity Framework ORM yapısıyla kod kalabalığının önüne geçmiş oluruz.
 
              //SqlDataAdapter adp= new SqlDataAdapter("select * from Users", con);
             //DataTable da= new DataTable();
@@ -24,9 +24,93 @@ paketler sayesinde daha k�sa ve anla��l�r bir �ekilde yazabiliriz.
 
             SimpleDbContext context = new SimpleDbContext(); ile;
             context.Users.ToList();
-            -> Entity Framework tek sat�rda halletti!
+            -> Entity Framework tek satırda halletti!
 
 
-            //Crud i�lemleri i�in interface ' de metot imzas� yap�p classlarda �a��rmma�z laz�m
-            //DataAccess katman�nda CRUD i�lemleri i�in interface olu�turuyoruz.
-            //�a��rd���m�z class -> Entity Framework ile CRUD i�lemlerini yapaca��m�z class
+            //Crud işlemleri için interface ' de metot imzası yapıp classlarda çağırmmaız lazım
+            //DataAccess katmanında CRUD işlemleri için interface oluşturuyoruz.
+            //çağırdığımız class -> Entity Framework ile CRUD işlemlerini yapacağımız class
+
+
+                    public void Add(OperationClaim operationClaim)
+        {
+            using (var context = new SimpleContextDb())
+            {
+                context.OperationClaims.Add(operationClaim);
+            }
+        
+        bu yapıda solid prensiplerini çiğnememiş oluruz.
+        çünkü her class için içindeki parametre farklı yapı aynı tekrarlı!
+        Generic yapı kurarak bunun önüne geçmiş oluruz.
+
+NOT:
+
+| Yapı                                        | Açıklama                                                                                                              |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `EfOperationClaimDal`                       | **Sadece `OperationClaim` için özel olarak yazılmıştır.** CRUD işlemleri tek bir sınıfa özel kodlanmıştır.            |
+| `EfEntityRepositoryBase<TEntity, TContext>` | **Tüm entity'ler için ortak kullanılır.** Generic yapı sayesinde tekrar tekrar aynı CRUD kodunu yazmana gerek kalmaz. |
+
+not:
+
+✅ Generic Repository Ne Sağlar?
+EfEntityRepositoryBase<TEntity, TContext> sınıfı şu faydaları sağlar:
+
+| Özellik                         | Açıklama                                                                                                                        |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Generic**                     | Tüm entity’ler için ortak bir yapı sunar: `Product`, `User`, `OperationClaim`, `Doctor`, vs.                                    |
+| **Yeniden kullanılabilirlik**   | `Add`, `Update`, `GetAll` gibi işlemleri her entity için bir daha yazmana gerek kalmaz.                                         |
+| **Temizlik ve okunabilirlik**   | Kodun daha sade, bakımı daha kolay hale gelir.                                                                                  |
+| **Solid prensipleriyle uyumlu** | Özellikle `Open/Closed Principle` – Genişlemeye açık, değişime kapalıdır. Yeni entity eklersin ama base class’ı değiştirmezsin. |
+
+📌 1. IEntityRepository<T> → Tüm Entity’ler için Ortak Arayüz;
+public interface IEntityRepository<T>
+Burada T generic parametresidir.
+
+Add, Delete, Update, Get, GetAll gibi temel CRUD metotları tanımlanır.
+
+Bu sayede her entity için ayrı ayrı interface yazmana gerek kalmaz
+
+
+NOT:
+->Uygulaması:
+using Core.DataAccess;
+using Entities.Concrete;
+ 1. IOperationClaimDal – Arayüz (Interface)
+namespace DataAccess.Abstract
+{
+    public interface IOperationClaimDal : IEntityRepository<OperationClaim>
+    {
+
+    }
+}
+📌 Açıklama:
+Bu bir interface yani arayüzdür.
+
+IOperationClaimDal, OperationClaim için veri erişim işlemlerinin sözleşmesini (contract)
+tanımlar.
+
+IEntityRepository<OperationClaim>'den kalıtım alır.
+
+Böylece Add, Delete, Update, Get, GetAll gibi metotlar otomatik olarak burada tanımlanmış olur.
+
+✅ Ne işe yarar?
+Business katmanında EfOperationClaimDal'a doğrudan bağımlı olmak yerine IOperationClaimDal'a
+bağımlı olursun. Böylece test edilebilirlik ve esneklik sağlarsın.
+
+ 2. EfOperationClaimDal – Concrete (EF Core ile uygulama)
+ using Core.DataAccess.EntityFramework;
+using DataAccess.Abstract;
+using DataAccess.Concrete.EntityFramework.Context;
+using Entities.Concrete;
+
+namespace DataAccess.Concrete.EntityFramework
+{
+    public class EfOperationClaimDal : EfEntityRepositoryBase<OperationClaim, SimpleContextDb>,
+    IOperationClaimDal
+    {
+
+    }
+}
+✅ Ne işe yarar?
+EF Core kullanarak OperationClaim için veritabanı işlemlerini (Add, Delete, Update, GetAll, vs.)
+gerçekleştirmeye hazır bir class'tır.
