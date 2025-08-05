@@ -1,0 +1,27 @@
+Orm Paketleri ne iþe yarar:
+//SqlDataAdapter adp= new SqlDataAdapter("select * from Users", con);
+//DataTable da= new DataTable();
+//da.Clear();
+//adp.Fill(da);
+
+sql ile yapacaðýmýz iþlemleri daha kolay hale getirir. -> bu kodlarý uzun uyazmak yerine
+paketler sayesinde daha kýsa ve anlaþýlýr bir þekilde yazabiliriz.
+
+ public class SimpleContextDb : DbContext
+ dbContext sýnýfý, Entity Framework Core'un temel sýnýfýdýr
+ ve veritabaný ile etkileþim kurmak için kullanýlýr.
+ -> database ler ile kolay bir þekilde çalýþmamýzý saðlar.
+
+ //dbContext içindeki onconfig metodunu override ederek sql baplantýsýný yapýyoruz.
+
+ Not:
+ Entity Framework ORM yapýsýyla kod kalabalýðýnýn önüne geçmiþ oluruz.
+
+             //SqlDataAdapter adp= new SqlDataAdapter("select * from Users", con);
+            //DataTable da= new DataTable();
+            //da.Clear();
+            //adp.Fill(da);
+
+            SimpleDbContext context = new SimpleDbContext(); ile;
+            context.Users.ToList();
+            -> Entity Framework tek satýrda halletti!
