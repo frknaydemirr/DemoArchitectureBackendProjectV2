@@ -114,3 +114,29 @@ namespace DataAccess.Concrete.EntityFramework
 ✅ Ne işe yarar?
 EF Core kullanarak OperationClaim için veritabanı işlemlerini (Add, Delete, Update, GetAll, vs.)
 gerçekleştirmeye hazır bir class'tır.
+
+Not:
+-business Crud işlemlerinin Generic yapısı yok!
+
+🔍 Dependency Injection (DI) Nedir?
+Dependency Injection, bir sınıfın bağımlı olduğu (kullanacağı) nesneleri kendi içinde oluşturmak 
+yerine, dışarıdan (yani başka bir yerden) sağlamasıdır.
+->ınterfacelerin hangi classlarla implemenet olduğunu söyleyen program
+ Bu sayede:
+Kod daha sade, test edilebilir ve esnek hale gelir.
+
+Katmanlar arası bağımlılık azalır.
+
+Solid prensiplerinden biri olan “Dependency Inversion Principle” uygulanmış olur.
+
+
+
+
+
+
+
+
+
+Not:
+neden Dto Kullandık?
+-
