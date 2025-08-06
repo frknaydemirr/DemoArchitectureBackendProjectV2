@@ -174,3 +174,47 @@ Not:
 -> Business bu kayıttan sonraki ve önceki işlemleri yapıp ondan sonra DataAcsess e söylemek;
 ->UI  da istek katmanı;
 
+Not:
+Fluent validation:
+ public string Register(RegisterAuthDto registerDto)
+        {
+
+            //Fluent validation
+            if (registerDto.Name == "")
+            return    "UserName cannot be Empty! ";
+
+            if (registerDto.Email == "")
+                return "Email cannot be Empty!";
+
+            if (registerDto.ImageUrl == "")
+                return "Image cannot be Empty!";
+
+            if (registerDto.Password == "")
+                return "Password cannot be Empty!";
+
+            if (registerDto.Password.Length < 6)
+                return "Password must be 6 character at least!";
+            _userService.Add(registerDto);
+            return "User Record has been completed succesfully";
+        }
+    }
+
+    -> Bu şekilde doğrulama işlemlerini uzun uzun yazmak yerine fluent validation paketiyle
+    daha pratik bir şekilde yapı kurabiliriz!
+
+
+    Not:
+    ->  public string Register(RegisterAuthDto registerDto)
+        {
+
+            //Fluent validation
+           UserValidator userValidator = new UserValidator();
+           ValidationResult result = userValidator.Validate(registerDto);
+            if (result.IsValid)
+            {
+                  _userService.Add(registerDto);
+                  return "User Record has been completed succesfully";
+            }
+            return "Please fill in the required fields";
+        } bu şekilde fluent validationla tek bir hata görebiliyoruz ancak metodu,
+        List yapısında yaparsak bütün hataları yakalayabiliriz!

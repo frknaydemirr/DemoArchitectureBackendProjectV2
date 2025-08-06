@@ -1,6 +1,9 @@
 ﻿using Business.Abstract;
+using Business.ValidationRules.FluentValidation;
+using Core.CrossCuttinsConcerns.Validations;
 using Core.Utilities.Hashing;
 using Entities.Dtos;
+using FluentValidation.Results;
 
 namespace Business.Concrete
 {
@@ -30,10 +33,23 @@ public AuthManager(IUserService userService)
             }
         }
 
-        public void Register(RegisterAuthDto registerDto)
+        public string Register(RegisterAuthDto registerDto)
         {
 
-            _userService.Add(registerDto);
+            //Cross Cutting Concerns -> Uygulamayı dikine kesmek;
+            //AOP
+            // FluentValidation kullanımı
+
+
+            UserValidator userValidator = new UserValidator();
+            ValidationTool.Validate(userValidator, registerDto);
+
+           _userService.Add(registerDto);
+          return   "User record has been completed successfully";
+            
+
         }
+
+       
     }
 }

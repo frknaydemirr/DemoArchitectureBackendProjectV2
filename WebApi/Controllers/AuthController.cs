@@ -19,8 +19,13 @@ namespace WebApi.Controllers
         [HttpPost("register")]
         public IActionResult Register(RegisterAuthDto authDto)
         {
-            _authService.Register(authDto);
-            return Ok("The User has been recorded succesfully");
+            var result = _authService.Register(authDto);
+
+            if (result.Contains("Empty") || result.Contains("must be"))
+                return BadRequest(result);  // HTTP 400
+
+            return Ok(result);  // HTTP 200
+
 
         }
 
