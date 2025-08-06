@@ -21,7 +21,7 @@ namespace Business.Concrete
 
 
 
-        public void Add(AuthDto authDto)
+        public void Add(RegisterAuthDto authDto)
         {
             byte[] passwordHash, passwordSalt;
 
@@ -35,6 +35,12 @@ namespace Business.Concrete
             user.PasswordSalt = passwordSalt;
             user.ImageUrl = authDto.ImageUrl;
             _userDal.Add(user);
+        }
+
+        public User GetByEmail(string Email)
+        {
+            var result=_userDal.Get(p=>p.Email==Email);
+            return result;
         }
 
         public List<User> GetList()

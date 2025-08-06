@@ -132,11 +132,45 @@ Solid prensiplerinden biri olan “Dependency Inversion Principle” uygulanmı�
 
 
 
+Not:
+-> Refactoring kod üzerinde düzeltme demektir!
 
 
 
+NOT:
+katmanlı mimari (Layered Architecture):
+-Entities.Dtos → Veri taşıma nesneleri (DTO - Data Transfer Object)
+-Business.Abstract → Servis arayüzleri (interface'ler)
+-WebApi.Controllers → API'nin dış dünyaya açıldığı yer (kullanıcıdan gelen istekleri alır)
+
+Dto neden kullanılır:
+public class AuthDto
+{
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public string ImageUrl { get; set; }
+    public string Password { get; set; }
+}
+-> örneğin burada  kullanıcıdan alınan verileri geçici olarak tutmak için kullanılır. 
+->ullanıcıdan gelen Register isteğinde bunlara gerek yok
+. İşte bu yüzden DTO sınıfı kullanılır: sadece gerekli verilerle iletişim kurmak için.
+(kullanıcıdajkiş bütün değperlere register da gerek bu yüzden GEREKLİ VERİLERLE İLETİŞİM İÇİN
+kullanılır;!)
+Kısaca:
+| Katman                          | Görevi                                                        |
+| ------------------------------- | ------------------------------------------------------------- |
+| **DTO (AuthDto)**               | Kullanıcıdan alınacak bilgileri taşır                         |
+| **Controller (AuthController)** | API’ye gelen isteği karşılar, DTO'yu servis katmanına iletir  |
+| **Service (IAuthService)**      | İş mantığını içerir, örneğin şifreyi hashler, veriyi kaydeder |
+| **Repository/DbContext**        | Veritabanı ile doğrudan iletişim kurar                        |
 
 
 Not:
-neden Dto Kullandık?
--
+-> bir classın içinde metot oluşturduğumuz zaman başka bir yerden o metoda erişeceğimizde;
+static yapıda olması gerekir metodun!
+
+Not:
+-> DataAccess sadece kayıt yapar bu kayıtların kontrollerini bilmez,
+-> Business bu kayıttan sonraki ve önceki işlemleri yapıp ondan sonra DataAcsess e söylemek;
+->UI  da istek katmanı;
+

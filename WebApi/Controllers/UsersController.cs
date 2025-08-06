@@ -18,12 +18,12 @@ namespace WebApi.Controllers
             _userService = userService;
         }
 
-        [HttpPost("add")]
-        public IActionResult Add(AuthDto authDto)
-        {
-            _userService.Add(authDto);
-            return Ok("User has been recorded succesfully");
-        }
+        //[HttpPost("add")]
+        //public IActionResult Add(AuthDto authDto)
+        //{
+        //    _userService.Add(authDto);
+        //    return Ok("User has been recorded succesfully");
+        //}
 
         [HttpGet("getList")]
         public IActionResult GetList()
