@@ -1,4 +1,6 @@
-﻿using Entities.Dtos;
+﻿using Core.Result.Abstract;
+using Core.Result.Concrete;
+using Entities.Dtos;
 
 namespace Business.Abstract
 {
@@ -6,7 +8,7 @@ namespace Business.Abstract
     //auth servisi 
     public  interface IAuthService
     {
-        string Register(RegisterAuthDto registerDto);
+        IResult  Register(RegisterAuthDto registerDto);
         string Login(LoginAuthDto loginDto);
     }
 }
