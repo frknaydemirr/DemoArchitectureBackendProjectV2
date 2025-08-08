@@ -10,7 +10,7 @@ namespace Business.Abstract
 {
     public  interface IUserService
     {
-        void Add(RegisterAuthDto authDto);
+        Task Add(RegisterAuthDto authDto);
         List<User> GetList();
 
         User GetByEmail(string email);

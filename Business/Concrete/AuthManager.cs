@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Validation;
 using Core.CrossCuttinsConcerns.Validations;
 using Core.Result.Abstract;
 using Core.Result.Concrete;
@@ -7,6 +8,7 @@ using Core.Utilities.Business;
 using Core.Utilities.Hashing;
 using Entities.Dtos;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace Business.Concrete
@@ -39,7 +41,8 @@ public AuthManager(IUserService userService)
 
 
         [ValidationAspect(typeof(UserValidator))]
-        [LogAspect]
+        //dependency ile programa bunu çağıracağımı anlatmam lazım:
+        
         //log aspect işlem bittikten sonra çalışacakken validatioın işlemden önce çalışmalı!
         public IResult Register(RegisterAuthDto registerDto)
         {
@@ -48,18 +51,22 @@ public AuthManager(IUserService userService)
             //AOP
             // FluentValidation kullanımı
 
-            int imgSize = 2;
-          
 
             IResult result = BusinessRules.Run(CheckIfEmailExists(registerDto.Email),
-                CheckIfImageSizeIsLessThenOneMb(imgSize)
+                CheckIfImageExtensionsAllow(registerDto.Image.FileName),
+                CheckIfImageSizeIsLessThenOneMb(registerDto.Image.Length)
+
                 );
 
 
-            if (!result.Success)
+            if (result !=null)
             {
                 return result;
             }
+
+            //dosya ismini criptolayacağız
+
+
 
             _userService.Add(registerDto);
             return new SuccessResult("User record has been completed successfully");
@@ -80,13 +87,28 @@ public AuthManager(IUserService userService)
             return new SuccessResult("User record has been completed successfully");
         }
 
-        private IResult CheckIfImageSizeIsLessThenOneMb(int imgSize)
+        private IResult CheckIfImageSizeIsLessThenOneMb(long imgSize)
         {
-            if (imgSize > 1)
+            decimal imgMbSize = Convert.ToDecimal(imgSize * 0.000001);
+            if (imgMbSize > 1)
             {
                 return new ErrorResult("This  Uploaded Image shoul be less then 1 MG ");
             }
             return new SuccessResult("User record has been completed successfully");
+        }
+
+        private IResult CheckIfImageExtensionsAllow(string fileName)
+        {
+          
+            var ext = fileName.Substring(fileName.LastIndexOf('.'));
+            var extension = ext.ToLower();
+            List<string> AllowFileExtensions = new List<string> { ".jpg", ".jpeg", ".gif", ".png" };
+            if (!AllowFileExtensions.Contains(extension))
+            {
+                return new ErrorResult("The uploaded image must be in \".jpg\", \".jpeg\", \".gif\", or \".png\" format!");
+            }
+
+            return new SuccessResult();
         }
        
     }

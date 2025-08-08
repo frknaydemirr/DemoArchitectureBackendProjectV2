@@ -21,8 +21,21 @@ namespace Business.Concrete
 
 
 
-        public void Add(RegisterAuthDto authDto)
+        public async Task Add(RegisterAuthDto authDto)
         {
+            
+            var fileFormat= authDto.Image.FileName.Substring(authDto.Image.FileName.LastIndexOf('.'));
+            fileFormat = fileFormat.ToLower();
+            string fileName = Guid.NewGuid().ToString() + fileFormat;
+
+            string path = "./Content/img/" + fileName;
+            using (var stream = System.IO.File.Create(path))
+            {
+                authDto.Image.CopyTo(stream);
+            }
+
+
+
             byte[] passwordHash, passwordSalt;
 
             HashingHelper.CreatePassword(authDto.Password, out  passwordHash, out  passwordSalt);
@@ -33,7 +46,7 @@ namespace Business.Concrete
             user.Name=authDto.Name;
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
-            user.ImageUrl = authDto.ImageUrl;
+            user.ImageUrl = fileName;
             _userDal.Add(user);
         }
 
@@ -47,5 +60,7 @@ namespace Business.Concrete
         {
             return _userDal.GetAll();
         }
+
+        
     }
 }
