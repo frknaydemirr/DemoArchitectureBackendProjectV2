@@ -218,3 +218,70 @@ Fluent validation:
             return "Please fill in the required fields";
         } bu şekilde fluent validationla tek bir hata görebiliyoruz ancak metodu,
         List yapısında yaparsak bütün hataları yakalayabiliriz!
+
+        Not:
+        ->  [AttributeUsage(AttributeTargets.Class|
+        AttributeTargets.Method,AllowMultiple =true,Inherited =true)]
+    public abstract class MethodInterceptionBaseAttribute
+    {
+
+    }
+    -> burada şunu demek istedik : 
+    C#’ta attribute yazarken çoğunlukla başına [AttributeUsage] eklenir.
+
+    Bu, bu attribute hem class’ların hem de method’ların üzerine yazılabilir demek.
+    [MyAttribute] // Class üzerine uygulanıyor
+public class MyClass { }
+
+[MyAttribute] // Method üzerine uygulanıyor
+public void MyMethod() { }
+ AllowMultiple = true
+Bu, aynı yere bu attribute’dan birden fazla eklenebilir anlamına gelir
+[MyAttribute("Log")]
+[MyAttribute("Cache")]
+public void MyMethod() { }
+Bu, bu attribute miras alınabilir demek.
+->abstract ⇒ Bu sınıf tek başına kullanılamaz, mutlaka miras alınarak kullanılmalı.
+
+
+NOT:
+ AOP (Aspect-Oriented Programming) yaklaşımında metodun içine girmeden
+ önce veya çıktıktan sonra çalışacak ek davranışları tanımlar.
+
+ Amacı: Metot çalışmadan önce, gelen registerDto’yu UserValidator ile doğrulamak.
+
+typeof(UserValidator) ⇒ Buraya hangi doğrulama sınıfı kullanılacağını söylüyorsun.
+Bu sınıf genellikle FluentValidation’dan türetilmiş bir sınıf olur.
+Çalışma mantığı:
+
+Metot çalıştırılmadan önce ValidationAspect devreye girer.
+
+UserValidator kullanılarak registerDto içindeki alanlar (email, şifre vs.) kurallara uyuyor mu kontrol edilir.
+
+Eğer kurallara uymuyorsa metot hiç çalışmadan hata döndürülür.
+
+public class UserValidator : AbstractValidator<RegisterAuthDto>
+{
+    public UserValidator()
+    {
+        RuleFor(u => u.Email).NotEmpty().EmailAddress();
+        RuleFor(u => u.Password).MinimumLength(6);
+    }
+}
+
+
+Neden bu şekilde kullanıyoruz?
+Bu yaklaşımın avantajı:
+
+AOP sayesinde “doğrulama” ve “loglama” kodlarını her metoda tek tek yazmana gerek yok.
+
+Metot sadece kendi işine odaklanıyor (Register ⇒ kayıt eklemek).
+
+Yan görevler (log, validation, caching, authorization) ayrı attribute’lar olarak yönetiliyor.
+
+Böylece temiz kod ve bakım kolaylığı sağlanıyor.
+
+[ValidationAspect] ⇒ Metot çalışmadan önce doğrulama yapar.
+
+[LogAspect] ⇒ Metot çalıştıktan sonra loglama yapar.
+İkisi de, AOP ile MethodInterceptionBaseAttribute gibi bir taban sınıf üzerinden çalışır.

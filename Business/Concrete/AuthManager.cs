@@ -7,6 +7,7 @@ using Core.Utilities.Business;
 using Core.Utilities.Hashing;
 using Entities.Dtos;
 using FluentValidation.Results;
+using System.ComponentModel.DataAnnotations;
 
 namespace Business.Concrete
 {
@@ -36,8 +37,10 @@ public AuthManager(IUserService userService)
             }
         }
 
-        //Success : True- False
-        //Message : String 
+
+        [ValidationAspect(typeof(UserValidator))]
+        [LogAspect]
+        //log aspect işlem bittikten sonra çalışacakken validatioın işlemden önce çalışmalı!
         public IResult Register(RegisterAuthDto registerDto)
         {
 
@@ -46,8 +49,7 @@ public AuthManager(IUserService userService)
             // FluentValidation kullanımı
 
             int imgSize = 2;
-            UserValidator userValidator = new UserValidator();
-            ValidationTool.Validate(userValidator, registerDto);
+          
 
             IResult result = BusinessRules.Run(CheckIfEmailExists(registerDto.Email),
                 CheckIfImageSizeIsLessThenOneMb(imgSize)
