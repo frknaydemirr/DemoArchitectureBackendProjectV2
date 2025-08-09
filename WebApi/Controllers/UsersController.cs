@@ -1,4 +1,4 @@
-﻿using Business.Abstract;
+﻿using Business.Repository.UserRepository;
 using Entities.Concrete;
 using Entities.Dtos;
 using Microsoft.AspNetCore.Http;

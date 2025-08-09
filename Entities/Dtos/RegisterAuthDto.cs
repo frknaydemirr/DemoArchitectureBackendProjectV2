@@ -11,6 +11,8 @@ namespace Entities.Dtos
 
         public string Password { get; set; }
 
+  
+
         public IFormFile Image { get; set; }
     }
 }

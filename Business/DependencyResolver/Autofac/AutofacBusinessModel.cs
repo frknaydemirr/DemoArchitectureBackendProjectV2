@@ -1,11 +1,13 @@
 ﻿using Autofac;
 using Autofac.Extras.DynamicProxy;
-using Business.Abstract;
-using Business.Concrete;
+using Business.Authentication;
+using Business.Repository.OperationClaimRepository;
+using Business.Repository.UserOperationClaimRepository;
+using Business.Repository.UserRepository;
 using Core.Utilities.Interceptors;
-using DataAccess.Abstract;
-using DataAccess.Concrete.EntityFramework;
-using DataAccess.Concrete.EntityFramework.Context;
+using DataAccess.Repositories.OperationClaimRepository;
+using DataAccess.Repositories.UserOperationClaimRepository;
+using DataAccess.Repositories.UserRepository;
 
 namespace Business.DependencyResolver.Autofac
 {

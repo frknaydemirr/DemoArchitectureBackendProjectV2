@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Core.Utilities.Hashing
 {
+    //password control:
     public class HashingHelper
     {
         //password hashleme işlemi;
