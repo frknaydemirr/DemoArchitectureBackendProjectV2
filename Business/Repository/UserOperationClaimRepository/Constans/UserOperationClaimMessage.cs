@@ -16,5 +16,9 @@ namespace Business.Repository.UserOperationClaimRepository.Constans
         public static string Deleted = "Permission successfully deleted.";
 
         public static string OperationClaimSetExist   = "This user has been assigned this permission before!";
+
+        public static string OperationClaimNotExist = "The permission information you selected is not found in the permissions!";
+
+        public static string UserNotExist = "The user whom  selected could not be found!";
     }
 }

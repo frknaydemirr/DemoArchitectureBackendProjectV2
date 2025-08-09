@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Business.Repository.OperationClaimRepository
 {
@@ -29,7 +30,7 @@ namespace Business.Repository.OperationClaimRepository
         [ValidationAspect(typeof(OperationClaimValidator))]
         public IResult Add(OperationClaim operationClaim)
         {
-            IResult result = BusinessRules.Run(IsNameAvaible(operationClaim.Name));
+            IResult result = BusinessRules.Run(IsNameExistForAdd(operationClaim.Name));
             if (result != null)
             {
                 return result;
@@ -42,6 +43,11 @@ namespace Business.Repository.OperationClaimRepository
         [ValidationAspect(typeof(OperationClaimValidator))]
         public IResult Update(OperationClaim operationClaim)
         {
+            IResult result = BusinessRules.Run(IsNameExistForUpdate(operationClaim));
+            if (result != null)
+            {
+                return result;
+            }
             _operationClaimDal.Update(operationClaim);
             return new SuccessResult(OperationClaimMessages.Updated);
 
@@ -71,7 +77,7 @@ namespace Business.Repository.OperationClaimRepository
         }
 
 
-        private IResult IsNameAvaible(string name)
+        private IResult IsNameExistForAdd(string name)
         {
             var result = _operationClaimDal.Get(p => p.Name == name);
             if (result != null)
@@ -81,6 +87,23 @@ namespace Business.Repository.OperationClaimRepository
             return new SuccessResult();
 
         }
+
+        private IResult IsNameExistForUpdate(OperationClaim  operationClaim)
+        {
+            var currentOperationClaim = _operationClaimDal.Get(p => p.Id == operationClaim.Id);
+            if (currentOperationClaim.Name !=operationClaim.Name)
+            {
+                var result = _operationClaimDal.Get(p => p.Name == operationClaim.Name);
+                if (result != null)
+                {
+                    return new ErrorResult(OperationClaimMessages.NameIsNotAvaible);
+                }
+               
+            }
+            return new SuccessResult();
+
+        }
+
     }
 }
 //controller üzerinden ekleme işlemini yapalım
