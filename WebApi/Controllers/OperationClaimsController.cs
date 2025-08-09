@@ -16,14 +16,76 @@ namespace WebApi.Controllers
         {
             _operationClaimService = operationClaimService;
         }
-
-        [HttpPost("add")]
         //operation claim kaydı yapacağız ; karşı taraftan veri alıp onu işleyebileceğiz!
         //IActionResul-> httprequestleri dönüyor 200,400...
+        [HttpPost("add")]
+
         public  IActionResult Add(OperationClaim operationClaim)
         {
-             _operationClaimService.Add(operationClaim);
-            return Ok("Registration successfully completed");
+          var result=   _operationClaimService.Add(operationClaim);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result.Message);
+           
+
+        }
+
+
+        [HttpPost("update")]
+
+        public IActionResult Update(OperationClaim operationClaim)
+        {
+            var result = _operationClaimService.Update(operationClaim);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result.Message);
+
+
+        }
+
+        [HttpPost("delete")]
+
+        public IActionResult Delete(OperationClaim operationClaim)
+        {
+            var result = _operationClaimService.Delete(operationClaim);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result.Message);
+
+
+        }
+
+        [HttpGet("getList")]
+
+        public IActionResult GetList()
+        {
+            var result = _operationClaimService.GetList();
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result.Message);
+
+
+        }
+
+        [HttpGet("getById")]
+
+        public IActionResult GetById(int id)
+        {
+            var result = _operationClaimService.GetById(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result.Message);
+
 
         }
 

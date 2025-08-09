@@ -1,4 +1,9 @@
-﻿using DataAccess.Repositories.OperationClaimRepository;
+﻿using Business.Repository.OperationClaimRepository.Constans;
+using Business.Repository.OperationClaimRepository.Validation.FluentValidation;
+using Core.Aspects.Validation;
+using Core.Utilities.Result.Abstract;
+using Core.Utilities.Result.Concrete;
+using DataAccess.Repositories.OperationClaimRepository;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -18,11 +23,48 @@ namespace Business.Repository.OperationClaimRepository
         {
             _operationClaimDal = operationClaimDal;
         }
-        public void Add(OperationClaim operationClaim)
+
+        //validate işlemi;
+        [ValidationAspect(typeof(OperationClaimValidator))]
+        public IResult Add(OperationClaim operationClaim)
         {
             _operationClaimDal.Add(operationClaim);
+            return new SuccessResult(OperationClaimMessages.Added);
            
         }
+
+        [ValidationAspect(typeof(OperationClaimValidator))]
+        public IResult Update(OperationClaim operationClaim)
+        {
+            _operationClaimDal.Update(operationClaim);
+            return new SuccessResult(OperationClaimMessages.Updated);
+
+        }
+
+
+        public IResult Delete(OperationClaim operationClaim)
+        {
+            _operationClaimDal.Delete(operationClaim);
+            return new SuccessResult(OperationClaimMessages.Deleted);
+
+        }
+
+
+        public IDataResult<List<OperationClaim>>GetList()
+        {
+          
+           return new SuccessDataResult<List<OperationClaim>>(_operationClaimDal.GetAll());
+
+        }
+
+        public IDataResult<OperationClaim> GetById(int id)
+        {
+
+            return new SuccessDataResult<OperationClaim>(_operationClaimDal.Get(p=>p.Id==id));
+
+        }
+
+       
     }
 }
 //controller üzerinden ekleme işlemini yapalım

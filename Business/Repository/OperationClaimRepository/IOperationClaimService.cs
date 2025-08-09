@@ -1,4 +1,5 @@
-﻿using Entities.Concrete;
+﻿using Core.Utilities.Result.Abstract;
+using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,14 @@ namespace Business.Repository.OperationClaimRepository
     //business Crud işlemlerinin Generic yapısı yok!
     public interface IOperationClaimService
     {
-        void Add(OperationClaim operationClaim);
+        IResult Add(OperationClaim operationClaim);
+
+        IResult Update(OperationClaim operationClaim);
+
+        IResult Delete(OperationClaim operationClaim);
+
+        IDataResult<List<OperationClaim>> GetList();
+
+        IDataResult<OperationClaim> GetById(int id);
     }
 }
