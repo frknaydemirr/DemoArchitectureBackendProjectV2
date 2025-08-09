@@ -13,7 +13,7 @@ namespace Business.Repository.UserOperationClaimRepository.Validation.FluentVali
         public UserOperationClaimValidator()
         {
             RuleFor(p => p.UserId).NotEmpty().WithMessage("Please select a user for the authorization assignment.");
-            RuleFor(p => p.OperationId).NotEmpty().WithMessage("You must select permissions for permission assignment.");
+            RuleFor(p => p.OperationClaimId).NotEmpty().WithMessage("You must select permissions for permission assignment.");
         }
     }
 }

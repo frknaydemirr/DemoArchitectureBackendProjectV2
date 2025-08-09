@@ -13,7 +13,7 @@ namespace Entities.Concrete
 
         public int UserId { get; set; }
 
-        public int OperationId { get; set; }
+        public int OperationClaimId { get; set; }
 
     }
 }
