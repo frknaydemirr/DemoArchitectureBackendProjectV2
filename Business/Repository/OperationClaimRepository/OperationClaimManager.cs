@@ -1,6 +1,7 @@
 ﻿using Business.Repository.OperationClaimRepository.Constans;
 using Business.Repository.OperationClaimRepository.Validation.FluentValidation;
 using Core.Aspects.Validation;
+using Core.Utilities.Business;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
 using DataAccess.Repositories.OperationClaimRepository;
@@ -28,9 +29,14 @@ namespace Business.Repository.OperationClaimRepository
         [ValidationAspect(typeof(OperationClaimValidator))]
         public IResult Add(OperationClaim operationClaim)
         {
+            IResult result = BusinessRules.Run(IsNameAvaible(operationClaim.Name));
+            if (result != null)
+            {
+                return result;
+            }
             _operationClaimDal.Add(operationClaim);
             return new SuccessResult(OperationClaimMessages.Added);
-           
+
         }
 
         [ValidationAspect(typeof(OperationClaimValidator))]
@@ -50,21 +56,31 @@ namespace Business.Repository.OperationClaimRepository
         }
 
 
-        public IDataResult<List<OperationClaim>>GetList()
+        public IDataResult<List<OperationClaim>> GetList()
         {
-          
-           return new SuccessDataResult<List<OperationClaim>>(_operationClaimDal.GetAll());
+
+            return new SuccessDataResult<List<OperationClaim>>(_operationClaimDal.GetAll());
 
         }
 
         public IDataResult<OperationClaim> GetById(int id)
         {
 
-            return new SuccessDataResult<OperationClaim>(_operationClaimDal.Get(p=>p.Id==id));
+            return new SuccessDataResult<OperationClaim>(_operationClaimDal.Get(p => p.Id == id));
 
         }
 
-       
+
+        private IResult IsNameAvaible(string name)
+        {
+            var result = _operationClaimDal.Get(p => p.Name == name);
+            if (result != null)
+            {
+                return new ErrorResult(OperationClaimMessages.NameIsNotAvaible);
+            }
+            return new SuccessResult();
+
+        }
     }
 }
 //controller üzerinden ekleme işlemini yapalım

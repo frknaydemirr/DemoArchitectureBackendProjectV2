@@ -319,3 +319,20 @@ Not:
 
         -bu yapı Solid prensiplerine aykırı;
         çünkü solid prensibine göre her metodun sadece 1 tane görevi olmalıdır!
+
+
+Not:
+Repository Nedir?
+Repository, DataAccess katmanında kullanılan bir tasarım deseni (design pattern)’dir.
+Amacı:
+
+Veritabanı erişimini soyutlamak (abstraction)
+
+Kod tekrarını önlemek
+
+Business katmanının SQL, EF Core, Dapper gibi teknolojilere bağımlı olmamasını sağlamak
+
+💬 Basitçe:
+
+Repository, veritabanı ile doğrudan konuşan bir "aracı" katmandır.
+Business katmanı, “Git bana bütün kullanıcıları getir” der; repository de hangi SQL çalışacak, EF Core mu kullanılacak, bunu kendi içinde halleder.

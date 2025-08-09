@@ -2,6 +2,7 @@
 using Business.Repository.UserOperationClaimRepository.Constans;
 using Business.Repository.UserOperationClaimRepository.Validation.FluentValidation;
 using Core.Aspects.Validation;
+using Core.Utilities.Business;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
 using DataAccess.Repositories.UserOperationClaimRepository;
@@ -44,10 +45,25 @@ namespace Business.Repository.UserOperationClaimRepository
         }
 
         [ValidationAspect(typeof(UserOperationClaimValidator))]
-        IResult IUserOperationClaimService.Add(UserOperationClaim userOperationClaim)
+            public  IResult Add(UserOperationClaim userOperationClaim)
         {
+            IResult result = BusinessRules.Run(IsOperationSetAvaible(userOperationClaim));
+            if (result != null)
+            {
+                return result;
+            }
             _userOperationClaimDal.Add(userOperationClaim);
             return new SuccessResult(UserOperationClaimMessage.Added);
+        }
+
+        public IResult IsOperationSetAvaible(UserOperationClaim userOperationClaim)
+        {
+            var result = _userOperationClaimDal.Get(p=> p.UserId==userOperationClaim.UserId && p.OperationClaimId ==userOperationClaim.OperationClaimId);
+            if (result != null)
+            {
+                return new ErrorResult(UserOperationClaimMessage.OperationClaimSetExist);
+            }
+            return new SuccessResult();
         }
     }
 }

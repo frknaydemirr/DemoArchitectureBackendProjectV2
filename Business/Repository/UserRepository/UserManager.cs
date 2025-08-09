@@ -67,10 +67,10 @@ namespace Business.Repository.UserRepository
             return result;
         }
 
-        public List<User> GetList()
-        {
-            return _userDal.GetAll();
-        }
+        //public List<User> GetList()
+        //{
+        //    return _userDal.GetAll();
+        //}
 
         //validasyon işlemi:
         [ValidationAspect(typeof(UserValidator))]
@@ -86,7 +86,7 @@ namespace Business.Repository.UserRepository
             return new SuccessResult(UserMessages.DeletedUser);
         }
 
-        IDataResult<List<User>> IUserService.GetList()
+          public  IDataResult<List<User>> GetList()
         {
             return new  SuccessDataResult<List<User>>(_userDal.GetAll());
         }
@@ -96,6 +96,7 @@ namespace Business.Repository.UserRepository
             return new SuccessDataResult<User>(_userDal.Get(p=>p.Id==id));
         }
 
+        [ValidationAspect(typeof(UserChangePasswordValidator))]
         public IResult ChangePassword(UserChangePasswordDto userChangePasswordDto)
         {
             var user = _userDal.Get(p=>p.Id ==userChangePasswordDto.UserId);

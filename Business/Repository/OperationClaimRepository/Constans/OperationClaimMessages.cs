@@ -14,5 +14,7 @@ namespace Business.Repository.OperationClaimRepository.Constans
         public static string Updated = "Permission successfully updated.";
 
         public static string Deleted = "Permission successfully deleted.";
+
+        public static string NameIsNotAvaible = "This permission name has been used before";
     }
 }
