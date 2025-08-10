@@ -5,6 +5,7 @@ using Business.Repository.OperationClaimRepository;
 using Business.Repository.UserOperationClaimRepository;
 using Business.Repository.UserRepository;
 using Core.Utilities.Interceptors;
+using Core.Utilities.Security.JWT;
 using DataAccess.Repositories.OperationClaimRepository;
 using DataAccess.Repositories.UserOperationClaimRepository;
 using DataAccess.Repositories.UserRepository;
@@ -32,6 +33,8 @@ namespace Business.DependencyResolver.Autofac
             builder.RegisterType<EfUserOperationClaimDal>().As<IUserOperationClaimDal>();
 
             builder.RegisterType<AuthManager >().As<IAuthService>();
+
+            builder.RegisterType<TokenHandler>().As<ITokenHandler>();
 
 
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();

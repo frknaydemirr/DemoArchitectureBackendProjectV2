@@ -82,7 +82,10 @@ app.UseCors("AllowOrigin");
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseAuthorization();  //kullanýcýnýn  tokana sahip olup olmadýðýný (giriþ yetkisi) olup olmadýðýný 
+
+
+app.UseAuthorization();  //kullanýcýnýn  rolleme kontrolünü yapar!
 
 app.MapControllers();
 

@@ -34,10 +34,11 @@ namespace WebApi.Controllers
         public IActionResult Login(LoginAuthDto  authDto)
         {
           var result=  _authService.Login(authDto);
-            if (result == "User has entered succesfully ")
+            if (result.Success)
+            {
                 return Ok(result);
-            return BadRequest(result);
-
+            }
+            return BadRequest(result.Message);
         }
     }
 

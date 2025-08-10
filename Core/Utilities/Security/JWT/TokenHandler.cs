@@ -9,6 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
+using System.Security.Claims;
+using Core.Extensions;
 
 namespace Core.Utilities.Security.JWT
 {
@@ -31,7 +33,9 @@ namespace Core.Utilities.Security.JWT
 
             //Şifrelenmiş kimliği oluşturuyoruz:
 
-            SigningCredentials signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.Aes128CbcHmacSha256);
+            SigningCredentials signingCredentials =
+    new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
 
 
             //Token Ayarları.
@@ -41,6 +45,7 @@ namespace Core.Utilities.Security.JWT
                 issuer: Configuration["Token:Issuer"],
                 audience: Configuration["Token:Audience"],
                 expires: token.Expiration,
+                claims: SetClaims(user,operationClaims),
                 notBefore: DateTime.Now,
                 signingCredentials: signingCredentials
                 );
@@ -70,5 +75,14 @@ namespace Core.Utilities.Security.JWT
                 return Convert.ToBase64String(number);
             }
         }
+
+        //claim in içersine veriler atayacağız:
+        private IEnumerable<Claim> SetClaims(User user, List<OperationClaim> operationClaims)
+        {
+            var  claims = new List<Claim>();
+            claims.AddName(user.Name);
+            claims.AddRoles(operationClaims.Select(p => p.Name).ToArray());
+            return claims; //LİSTEYİ döndürdük;
+        }
     }
-}a
+}

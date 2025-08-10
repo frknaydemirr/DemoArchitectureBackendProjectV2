@@ -117,5 +117,10 @@ namespace Business.Repository.UserRepository
 
 
         }
+
+        public List<OperationClaim> GetUserOperationClaims(int userId)
+        {
+           return _userDal.GetUserOperationClaims(userId);
+        }
     }
 }

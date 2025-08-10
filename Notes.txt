@@ -336,3 +336,105 @@ Business katmanının SQL, EF Core, Dapper gibi teknolojilere bağımlı olmamas
 
 Repository, veritabanı ile doğrudan konuşan bir "aracı" katmandır.
 Business katmanı, “Git bana bütün kullanıcıları getir” der; repository de hangi SQL çalışacak, EF Core mu kullanılacak, bunu kendi içinde halleder.
+
+:NOT
+-> Kendi tokenımızı yazma:
+ public  static  class ClaimsExtensions
+    {
+        public static void AddName(this ICollection<Claim> claims, string name)
+        {
+
+            claims.Add(new Claim(ClaimTypes.Name,name));
+        }
+
+        //roller için ekleme
+        public static void AddRoles(this ICollection<Claim> claims, string[] roles)
+        {
+
+            roles.ToList().ForEach(roles => claims.Add(new Claim(ClaimTypes.Role, roles)));
+        }
+    }
+} 
+-Bu ClaimsExtensions sınıfı, C# Extension Method (genişletme metodu) kullanarak ICollection<Claim> tipine iki yeni yardımcı metot ekliyor:
+
+AddName(...)
+
+AddRoles(...)
+
+Bunlar sayesinde JWT içine claim ekleme işlemini daha kısa ve temiz kodla yapabiliyorsun.
+
+1️. AddName metodu.
+this ICollection<Claim> claims → Bu sayede metodu claims listesi üzerinden çağırabilirsin.
+
+İçerisine ClaimTypes.Name tipinde bir claim ekliyor.
+
+2. AddRoles metodu
+
+
+string[] roles parametresi ile gelen rol listesi üzerinde dönüyor.
+
+Her bir rol için ClaimTypes.Role tipinde claim ekliyor.
+->
+var claims = new List<Claim>();
+claims.AddRoles(new string[] { "Admin", "User" });
+// Artık claims listesinde:
+// [Type: Role, Value: "Admin"]
+// [Type: Role, Value: "User"]
+->var claims = new List<Claim>();
+claims.AddName("Furkan Aydemir");
+// Artık claims listesinde: [Type: Name, Value: "Furkan Aydemir"] var.
+
+Nerede kullanılır?
+Bu metotlar genelde JWT token üretirken claim listesi hazırlamak için kullanılır.
+Örneğin TokenHandler içinde:
+var claims = new List<Claim>();
+claims.AddName(user.FirstName + " " + user.LastName);
+claims.AddRoles(operationClaims.Select(o => o.Name).ToArray());
+
+NOT:
+public List<OperationClaim> UserOperationClaims(int UserId)
+{
+    using (var context = new SimpleContextDb())
+    {
+        var result = from UserOperationClaim in context.UserOperationClaims.Where(p => p.UserId == UserId)
+                     join OperationClaim in context.OperationClaims
+                     on UserOperationClaim.OperationClaimId equals OperationClaim.Id
+                     select new OperationClaim
+                     {
+                         Id = OperationClaim.Id,
+                         Name = OperationClaim.Name
+                     };
+
+        return result.OrderBy(p => p.Name).ToList();
+    }
+}
+
+
+
+ Adım adım:
+
+using (var context = new SimpleContextDb())
+
+Yeni bir EF Core veritabanı context'i oluşturuyor (SimpleContextDb).
+
+using bloğu bittiğinde context otomatik dispose ediliyor.
+
+context.UserOperationClaims.Where(p => p.UserId == UserId)
+
+UserOperationClaims tablosundan sadece ilgili kullanıcıya ait kayıtlar filtreleniyor.
+
+Yani bu kullanıcı hangi OperationClaim id’lerine sahip, onları alıyoruz.
+
+join OperationClaim in context.OperationClaims
+
+Kullanıcının sahip olduğu claim ID'lerini, OperationClaims tablosuyla join ediyoruz.
+
+Böylece claim’in sadece ID’si değil, adı (Name) gibi bilgileri de çekiyoruz.
+
+select new OperationClaim { ... }
+
+Sadece Id ve Name alanları doldurulmuş yeni OperationClaim nesneleri oluşturuluyor.
+
+result.OrderBy(p => p.Name).ToList();
+
+Rolleri isimlerine göre sıralayıp liste olarak döndürüyor.

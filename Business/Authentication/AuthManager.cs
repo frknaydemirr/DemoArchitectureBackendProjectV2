@@ -6,6 +6,8 @@ using Core.Utilities.Business;
 using Core.Utilities.Hashing;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
+using Core.Utilities.Security.JWT;
+using Entities.Concrete;
 using Entities.Dtos;
 
 namespace Business.Authentication
@@ -13,27 +15,28 @@ namespace Business.Authentication
     public class AuthManager : IAuthService
     {
         private readonly IUserService _userService;
-   
-          
+        private readonly ITokenHandler  _tokenHandler;
 
-public AuthManager(IUserService userService)
+
+
+        public AuthManager(IUserService userService ,ITokenHandler tokenHandler )
         {
             _userService = userService;
+            _tokenHandler = tokenHandler;
         }
 
-        public string Login(LoginAuthDto loginDto)
+        public IDataResult<Token> Login(LoginAuthDto loginDto)
         {
             var user = _userService.GetByEmail(loginDto.Email);
             var result = HashingHelper.VerifyPasswordHash(loginDto.Password,user.PasswordHash, user.PasswordSalt);
+            List<OperationClaim> operationClaims = _userService.GetUserOperationClaims(user.Id);
             if (result)
             {
-              return  "User has entered succesfully ";
-
+                Token token = new Token();
+                token = _tokenHandler.CreateToken(user, operationClaims);
+                return new SuccessDataResult<Token>(token);
             }
-            else
-            {
-                return "User's info  wrong ";
-            }
+            return new ErrorDataResult<Token>("User' mail account or password is wrong!");
         }
 
 
