@@ -465,3 +465,52 @@ Adım adım işlemler yapılır
 Tüm adımlar başarılıysa commit edilir → değişiklikler kalıcı olur
 
 Hata olursa rollback yapılır → sanki hiç işlem yapılmamış gibi olur
+
+Not:
+IOC NEDİR:
+IoC (Inversion of Control) yazılım geliştirmede kullanılan bir tasarım prensibi.
+
+
+"Nesnelerin bağımlılıklarını kendilerinin oluşturması yerine, dışarıdan verilmesi prensibi"
+
+Yani kodun kontrol akışını sen değil, framework/kapsayıcı yönetiyor.
+
+
+Not:
+Casching işlemi:
+-, bir metot çağrısının sonucunu önbelleğe (cache) alarak tekrar tekrar aynı işlemi
+yapmak yerine önbellekten hızlıca geri döndürmek için hazırlanmış bir
+altyapıyı gösteriyor. Bu, performansı artırmak ve 
+gereksiz veri tabanı ya da işlem yükünü azaltmak için sık kullanılan bir tekniktir.
+
+2. CoreModule Sınıfı — Önbellek Servisini Sisteme Enjekte Etme
+
+public class CoreModule : ICoreModule
+{
+    public void Load(IServiceCollection services)
+    {
+        services.AddMemoryCache();
+        services.AddSingleton<ICacheManager, MemoryCashManager>();
+    }
+}
+-Bu sınıf, sistemde kullanılan servislerin konfigürasyonunu yapar.
+services.AddMemoryCache() ile .NET'in MemoryCache altyapısını servislere ekler.
+Bu, RAM üzerinde çalışan geçici önbellek sağlar.
+services.AddSingleton<ICacheManager, MemoryCashManager>(); ile
+kendi tanımladığın ICacheManager arayüzünün, MemoryCashManager isimli 
+somut sınıf tarafından implemente edildiğini ve bunun singleton
+(uygulama boyunca tek bir örnek) olarak kullanılacağını belirtir.
+
+Böylece CacheAspect içinde çağrılan _cacheManager nesnesi,
+MemoryCashManager üzerinden gerçek önbellek işlemlerini yapar.
+
+Özet:
+CacheAspect: Metot bazlı önbellekleme için aspect. Metot çalışmadan önce cache kontrolü yapar, varsa önbellekten döner yoksa metodu çalıştırır ve sonucu önbelleğe ekler.
+
+CoreModule: .NET servis konteynerine MemoryCache ve CacheManager servisini ekler.
+
+[CacheAspect(60)]: Metodun 60 dakika önbellekleme ile çalışmasını sağlar.
+
+->Bu yapı sayesinde aynı metot aynı parametrelerle tekrar tekrar çağrıldığında 
+veri tabanı veya ağır işlemler yerine
+çok hızlı şekilde önbellekten sonuç alınır. Performans artar, sistem yükü azalır.

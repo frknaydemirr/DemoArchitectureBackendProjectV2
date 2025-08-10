@@ -1,6 +1,9 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Business.DependencyResolver.Autofac;
+using Core.DependencyResolves;
+using Core.Extensions;
+using Core.Utilities.IoC;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -57,6 +60,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SecurityKey"])),
         ClockSkew = TimeSpan.Zero //expression süresine artý olarak bu süreyi ekler!
     };
+});
+
+
+
+builder.Services.AddDependencyResolvers(new ICoreModule[]{
+    //coreMopdulke  içerisine eklediðim her türlü servisi otomatik olarak dahil etmiþ oluyoruz
+    new CoreModule()
 });
 
 

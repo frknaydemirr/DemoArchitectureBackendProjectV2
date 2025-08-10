@@ -62,8 +62,9 @@ namespace WebApi.Controllers
 
         }
 
+        //Tokenımızı kontrol ediyor; istersek de rolümüzü kontrol ediyor:
         [HttpGet("getList")]
-        [Authorize(Roles ="GetList")]
+        //[Authorize(Roles ="GetList")]
         public IActionResult GetList()
         {
             var result = _operationClaimService.GetList();

@@ -1,6 +1,7 @@
 ﻿using Business.Repository.UserRepository.Contans;
 using Business.Repository.UserRepository.Validation.FluentValidation;
 using Business.Utilities.File;
+using Core.Aspects.Caching;
 using Core.Aspects.Transaction;
 using Core.Aspects.Validation;
 using Core.Utilities.Hashing;
@@ -32,6 +33,7 @@ namespace Business.Repository.UserRepository
 
 
 
+        [RemoveCacheAspect("IUserService.GetList")]
         public async void Add(RegisterAuthDto registerDto)
         {
 
@@ -88,6 +90,8 @@ namespace Business.Repository.UserRepository
             return new SuccessResult(UserMessages.DeletedUser);
         }
 
+
+        [CacheAspect(60)]
           public  IDataResult<List<User>> GetList()
         {
             return new  SuccessDataResult<List<User>>(_userDal.GetAll());
