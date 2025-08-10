@@ -438,3 +438,30 @@ Sadece Id ve Name alanları doldurulmuş yeni OperationClaim nesneleri oluşturu
 result.OrderBy(p => p.Name).ToList();
 
 Rolleri isimlerine göre sıralayıp liste olarak döndürüyor.
+
+
+Not:
+API tarafında transaction işlemi dediğimiz şey, birden fazla veritabanı operasyonunun tek bir bütün olarak çalıştırılmasıdır.
+Yani "ya hepsi başarılı olur, ya hiçbiri olmaz" mantığı.
+
+ Neden kullanılır?
+Düşün ki API’n içinde bir endpoint var ve bu endpoint:
+
+Kullanıcı tablosuna yeni kayıt ekliyor
+
+Kullanıcının bakiyesinden para düşüyor
+
+Başka bir tablodaki raporu güncelliyor
+
+Eğer bu üç işlemden bir tanesi bile hata alırsa (örneğin 2. adımda bağlantı koparsa)
+ilk adımda yapılan kayıt da geri alınmalı.
+İşte bunu transaction yönetiyor.
+
+Mantık:
+Transaction başlatılır (BeginTransaction)
+
+Adım adım işlemler yapılır
+
+Tüm adımlar başarılıysa commit edilir → değişiklikler kalıcı olur
+
+Hata olursa rollback yapılır → sanki hiç işlem yapılmamış gibi olur

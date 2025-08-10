@@ -1,6 +1,7 @@
 ﻿using Business.Repository.UserRepository.Contans;
 using Business.Repository.UserRepository.Validation.FluentValidation;
 using Business.Utilities.File;
+using Core.Aspects.Transaction;
 using Core.Aspects.Validation;
 using Core.Utilities.Hashing;
 using Core.Utilities.Result.Abstract;
@@ -74,6 +75,7 @@ namespace Business.Repository.UserRepository
 
         //validasyon işlemi:
         [ValidationAspect(typeof(UserValidator))]
+        [TransactionAspect()] //işlemlerden birisi bile hatalıysa tüm işlemleri geri alır ve bana transaction hatası döner
         public IResult Update(User user)
         {
            _userDal.Update(user);
