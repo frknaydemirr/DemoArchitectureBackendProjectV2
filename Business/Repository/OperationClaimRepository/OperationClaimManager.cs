@@ -1,4 +1,5 @@
-﻿using Business.Repository.OperationClaimRepository.Constans;
+﻿using Business.Aspects.Security;
+using Business.Repository.OperationClaimRepository.Constans;
 using Business.Repository.OperationClaimRepository.Validation.FluentValidation;
 using Core.Aspects.Validation;
 using Core.Utilities.Business;
@@ -62,6 +63,7 @@ namespace Business.Repository.OperationClaimRepository
         }
 
 
+        [SecuredAspect("Admin")]
         public IDataResult<List<OperationClaim>> GetList()
         {
 
