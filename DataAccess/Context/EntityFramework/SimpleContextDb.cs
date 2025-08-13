@@ -20,6 +20,8 @@ namespace DataAccess.Context.EntityFramework
         public DbSet<OperationClaim>? OperationClaims { get; set; }
         public DbSet<UserOperationClaim>? UserOperationClaims { get; set; }
 
+        public DbSet<EmailParameters>? EmailParameters { get; set; }
+
     }
 }
 
