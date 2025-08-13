@@ -18,6 +18,11 @@ namespace Business.Aspects.Security
         private string[] _roles;
         private IHttpContextAccessor _httpContextAccessor;
 
+        public SecuredAspect()
+        {
+            _httpContextAccessor = ServiceTool.ServiceProvider.GetService<IHttpContextAccessor>();
+        }
+
         public SecuredAspect(string roles)
         {
             _roles = roles.Split(",");
@@ -29,16 +34,33 @@ namespace Business.Aspects.Security
         //işlem başlamadan önce benim güvenlik kontrolüm yapılsın:
         protected override void OnBefore(IInvocation invocation)
         {
-            var roleClaims = _httpContextAccessor.HttpContext.User.ClaimsRoles();
-            foreach (var role in _roles)
+            if (_roles != null)
             {
-                if (roleClaims.Contains(role))
+                var roleClaims = _httpContextAccessor.HttpContext.User.ClaimsRoles();
+                foreach (var role in _roles)
+                {
+                    if (roleClaims.Contains(role))
+                    {
+                        return;
+
+                    }
+                    throw new Exception("You are not authorized to perform this operation.");
+                }
+            }
+
+            else
+            {
+                //token var mı yok mu kontrol ediyoruz:
+                var claims = _httpContextAccessor.HttpContext.User.Claims;
+                if (claims.Count() > 0)
                 {
                     return;
-
                 }
                 throw new Exception("You are not authorized to perform this operation.");
+
             }
+
+           
 
 
         }

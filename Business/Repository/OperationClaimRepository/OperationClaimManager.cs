@@ -1,6 +1,7 @@
 ﻿using Business.Aspects.Security;
 using Business.Repository.OperationClaimRepository.Constans;
 using Business.Repository.OperationClaimRepository.Validation.FluentValidation;
+using Core.Aspects.Performance;
 using Core.Aspects.Validation;
 using Core.Utilities.Business;
 using Core.Utilities.Result.Abstract;
@@ -62,8 +63,9 @@ namespace Business.Repository.OperationClaimRepository
 
         }
 
-
-        [SecuredAspect("Admin")]
+        //aspecte parametre istemiyorsak  bir constructer yapısı daha kurmam lazım.
+        [SecuredAspect()]
+        [PerformanceAspect()]
         public IDataResult<List<OperationClaim>> GetList()
         {
 
