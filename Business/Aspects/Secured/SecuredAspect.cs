@@ -34,36 +34,27 @@ namespace Business.Aspects.Security
         //işlem başlamadan önce benim güvenlik kontrolüm yapılsın:
         protected override void OnBefore(IInvocation invocation)
         {
-            if (_roles != null)
+            if (_roles != null && _roles.Length > 0)
             {
                 var roleClaims = _httpContextAccessor.HttpContext.User.ClaimsRoles();
-                foreach (var role in _roles)
-                {
-                    if (roleClaims.Contains(role))
-                    {
-                        return;
 
-                    }
+                bool hasRole = _roles.Any(role => roleClaims.Contains(role));
+                if (!hasRole)
+                {
                     throw new Exception("You are not authorized to perform this operation.");
                 }
             }
-
             else
             {
-                //token var mı yok mu kontrol ediyoruz:
+                // sadece token var mı yok mu kontrol et
                 var claims = _httpContextAccessor.HttpContext.User.Claims;
-                if (claims.Count() > 0)
+                if (!claims.Any())
                 {
-                    return;
+                    throw new Exception("You are not authorized to perform this operation.");
                 }
-                throw new Exception("You are not authorized to perform this operation.");
-
             }
-
-           
-
-
         }
+
 
     }
 }

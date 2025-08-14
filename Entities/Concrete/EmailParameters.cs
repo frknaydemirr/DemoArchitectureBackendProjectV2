@@ -18,7 +18,8 @@ namespace Entities.Concrete
         public string Password { get; set; }
 
 
-        public string Port { get; set; }
+        public int Port { get; set; }
+
 
 
         public bool SSL { get; set; }

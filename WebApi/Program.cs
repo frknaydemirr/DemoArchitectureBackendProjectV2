@@ -97,6 +97,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();  //kullanýcýnýn  tokana sahip olup olmadýðýný (giriþ yetkisi) olup olmadýðýný 
 
+app.UseAuthentication();
 
 app.UseAuthorization();  //kullanýcýnýn  rolleme kontrolünü yapar!
 
